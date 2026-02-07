@@ -1,6 +1,7 @@
 #include "speedtempanddistancectrl.h"
 #include <QDebug>
-constexpr int MILAGE{36};
+constexpr int MILAGE{10};
+constexpr int avrageDistanceToRaiseTemp = 5;
 SpeedTempAndDistanceCtrl::SpeedTempAndDistanceCtrl(QObject *parent)
     : QObject{parent},
       m_timer{new QTimer(this)},
@@ -76,7 +77,7 @@ int SpeedTempAndDistanceCtrl::fuel() const
     return m_fuel;
 }
 
-float SpeedTempAndDistanceCtrl::distanceTraveled() const
+double SpeedTempAndDistanceCtrl::distanceTraveled() const
 {
     return m_distanceTraveled;
 }
@@ -129,10 +130,16 @@ void SpeedTempAndDistanceCtrl::getFuelleft(int speed)
     constexpr float intervalSeconds = 0.150f;
     constexpr float secondsInHour = 3600.0f;
     //this coming speed will be last for 150 miliseconds distance traveled in that duration
-   // float currentDistance = speed *(intervalSeconds/secondsInHour);
-    float currentDistance = speed * 0.150;
+#ifdef QT_DEBUG
+    float currentDistance = speed * 0.150; // for debug
+#else
+    float currentDistance = speed *(intervalSeconds/secondsInHour); // for release
+#endif
     m_distanceTraveled += currentDistance;
+   // qDebug()<<"total distance: "<<totaldistance;
     m_distanceForFuelConsumption += currentDistance;
+    m_displayDistance = static_cast<int>(m_distanceTraveled);
+    emit displayDistanceChanged();
 //    qDebug()<<"distance: "<<m_distanceTraveled;
     while(m_distanceForFuelConsumption >= MILAGE)
     {
@@ -152,12 +159,16 @@ void SpeedTempAndDistanceCtrl::getTemperature(int speed)
 {
     constexpr float intervalSeconds = 0.150f;
     constexpr float secondsInHour = 3600.0f;
-    constexpr int avrageDistanceToRaiseTemp = 10;
+
     constexpr int timeAllowedONMaxTemp = 100;
     //this coming speed will be last for 150 miliseconds distance traveled in that duration
-   // float currentDistance = speed *(intervalSeconds/secondsInHour);
+#ifdef QT_DEBUG
     float currentDistance = speed * 0.150;
-    m_distanceTraveled += currentDistance;
+#else
+    float currentDistance = speed *(intervalSeconds/secondsInHour);
+#endif
+
+  //  m_distanceTraveled += currentDistance;
     m_distanceForTemp += currentDistance;
     while(m_distanceForTemp >= avrageDistanceToRaiseTemp)
     {
@@ -219,4 +230,9 @@ void SpeedTempAndDistanceCtrl::setFuel(int newFuel)
 bool SpeedTempAndDistanceCtrl::isOverHeating() const
 {
     return m_isOverHeating;
+}
+
+int SpeedTempAndDistanceCtrl::displayDistance() const
+{
+    return static_cast<int>(m_distanceTraveled);
 }

@@ -32,6 +32,33 @@ Window {
         anchors.fill: parent
         anchors.centerIn: parent
         color: "#222222"
+        Row{
+            width:200
+            height: 30
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.topMargin: 30
+            anchors.leftMargin: 30
+            Rectangle{
+                width:150
+                height: 30
+
+                color: "yellowgreen"
+                Text {
+                    anchors.centerIn: parent
+                    color: "red"
+                    id: distanceMeterId
+                    text: dialCtrlId.displayDistance
+                    font.pointSize: 20
+
+                }
+            }
+            Text {
+                color: "red"
+                text: qsTr("Km")
+                font.pointSize: 20
+            }
+        }
 
         SpeedMeter{
             id: speedoMeeterId

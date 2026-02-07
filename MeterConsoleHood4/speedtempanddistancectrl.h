@@ -9,7 +9,8 @@ class SpeedTempAndDistanceCtrl : public QObject
     Q_OBJECT
     Q_PROPERTY(int speed READ speed NOTIFY speedChanged)
     Q_PROPERTY(int fuel READ fuel WRITE setFuel  NOTIFY fuelChanged)
-    Q_PROPERTY(float distanceTraveled READ distanceTraveled NOTIFY distanceTraveledChanged)
+    Q_PROPERTY(double distanceTraveled READ distanceTraveled NOTIFY distanceTraveledChanged)
+    Q_PROPERTY(int displayDistance READ displayDistance NOTIFY displayDistanceChanged)
     Q_PROPERTY(float temperature READ temperature NOTIFY temperatureChanged)
     Q_PROPERTY(bool holding READ holding NOTIFY holdingChanged)
     Q_PROPERTY(bool isOverHeating READ isOverHeating  NOTIFY isOverHeatingChanged)
@@ -28,7 +29,7 @@ public:
 
     int fuel() const;
 
-    float distanceTraveled() const;
+    double distanceTraveled() const;
 
     float temperature() const;
 
@@ -44,6 +45,8 @@ public:
 
     bool isOverHeating() const;
 
+    int displayDistance() const;
+
 signals:
     void speedChanged();
 
@@ -57,6 +60,8 @@ signals:
 
     void isOverHeatingChanged();
 
+    void displayDistanceChanged();
+
 private:
     void getFuelleft(int speed);
     void getTemperature(int speed);
@@ -65,15 +70,17 @@ private:
 
     int m_speed;
     int m_fuel;
-    float m_distanceTraveled;
+    double m_distanceTraveled;
     float m_temperature;
     bool m_holding;
-    int m_distanceForFuelConsumption;
-    int m_distanceForTemp;
+    double m_distanceForFuelConsumption;
+    double m_distanceForTemp;
     State m_state;
     bool m_onMaxTemp;
     int m_durationCountAfterMaxTemp;
     bool m_isOverHeating;
+    float totaldistance{0};
+    int m_displayDistance;
 };
 
 #endif // SPEEDTEMPANDDISTANCECTRL_H
